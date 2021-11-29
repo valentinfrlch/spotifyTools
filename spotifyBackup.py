@@ -1,13 +1,18 @@
 import spotipy
+from spotipy import oauth2
 from spotipy.oauth2 import SpotifyOAuth
 import datetime
+from PIL import Image, ImageFont, ImageDraw
+import os, random
+import base64
 
 client_id="099bfd618f6a4e668aab271bc6761720"
-client_secret = "fcca8c7205244eecadfcb07bcadd0dd2"
+client_secret = "93616a9f12ef40c998205ce4d6282622"
 redirect_uri = "http://127.0.0.1:9090"
 
 month = datetime.datetime.now().strftime("%B")
 
+"""""
 def get_liked_songs():
     scope = "user-library-read"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
@@ -84,5 +89,56 @@ def backup_month():
         else:
             print("[WARNING] Playlist already exists")
 
+"""""
 
-backup_month()
+
+def dominant_color_generator(month):
+    colors = ["white", "white", "green", "green", "green", "yellow", "yellow", "yellow", "orange", "orange", "orange", "white"]
+    months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+    generated_color = colors[months.index(month)]
+    return generated_color
+
+
+
+def generate_cover(query):
+    from google_images_search import GoogleImagesSearch
+    gis = GoogleImagesSearch('AIzaSyChvQNUot0_kNFim2RCCi8sN3Ytr6wrHB4', '13e74226706cfb771')
+    _search_params = {
+        'q': query + " wallpaper 4k nature unsplash",
+        'num': 1,
+        'safe': 'medium',
+        'fileType': 'jpg',
+        'imgType': 'photo',
+        'imgDominantColor': dominant_color_generator(query),
+        'imgColorType': 'color'
+    }
+    gis.search(search_params=_search_params, path_to_dir='dataset', width=600, height=600, custom_image_name='asset')
+    print("[INFO] Downloaded dataset")
+    print("[INFO] Generating Thumbnail...")
+    font_type = "/home/pi/scripts/spotify/dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
+    font = ImageFont.truetype(font_type, 130, encoding="unic")
+    img = Image.open("dataset/asset.jpg")
+    
+    draw = ImageDraw.Draw(img)
+    w, h = draw.textsize(month, font=font)
+    W, H = (600, 600)
+
+    draw.text(((W-w)/2,(H-h)/2), month, (255,255,255), font=font)
+    img.save("dataset/thumbnail.jpg")
+    os.remove("dataset/asset.jpg")
+    print("[INFO] cover rendered")
+
+
+def upload_cover(playlist_id):
+    scope = "ugc-image-upload"
+    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
+    # reformat encoding jpg -> base64
+    image = open("dataset/thumbnail.jpg", 'rb')
+    image_read = image.read()
+    cover_encoded = base64.b64encode(image_read).decode("utf-8")
+    spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
+
+
+# backup_month()
+# generate_cover("November")
+upload_cover("38x7gRYkkkrS4RN5N3TWy9")
