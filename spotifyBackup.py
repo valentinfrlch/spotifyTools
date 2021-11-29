@@ -12,7 +12,6 @@ redirect_uri = "http://127.0.0.1:9090"
 
 month = datetime.datetime.now().strftime("%B")
 
-"""""
 def get_liked_songs():
     scope = "user-library-read"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
@@ -72,7 +71,7 @@ def playlist_add_songs(songs, id=create_playlist()):
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     if id is not None:
         spotify.user_playlist_add_tracks(user="vfroehlich", playlist_id=id, tracks=songs, position=None)
-        return True
+        return id
     else:
         return False
 
@@ -84,12 +83,13 @@ def playlist_chunks(list=extract_id(), n=100):
 
 def backup_month():
     for go in list((playlist_chunks())):
-        if playlist_add_songs(songs=go) == True:
+        id = playlist_add_songs(songs=go)
+        if  id != False:
             print("[INFO] Playlist successfully created")
         else:
             print("[WARNING] Playlist already exists")
-
-"""""
+            break
+    generate_cover(month, id)
 
 
 def dominant_color_generator(month):
@@ -100,7 +100,7 @@ def dominant_color_generator(month):
 
 
 
-def generate_cover(query):
+def generate_cover(query, playlist_ID):
     from google_images_search import GoogleImagesSearch
     gis = GoogleImagesSearch('AIzaSyChvQNUot0_kNFim2RCCi8sN3Ytr6wrHB4', '13e74226706cfb771')
     _search_params = {
@@ -127,6 +127,7 @@ def generate_cover(query):
     img.save("dataset/thumbnail.jpg")
     os.remove("dataset/asset.jpg")
     print("[INFO] cover rendered")
+    upload_cover(playlist_ID)
 
 
 def upload_cover(playlist_id):
@@ -139,6 +140,4 @@ def upload_cover(playlist_id):
     spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
-# backup_month()
-# generate_cover("November")
-upload_cover("38x7gRYkkkrS4RN5N3TWy9")
+backup_month()
