@@ -12,6 +12,7 @@ redirect_uri = "http://127.0.0.1:9090"
 
 month = datetime.datetime.now().strftime("%B")
 
+
 def get_liked_songs():
     scope = "user-library-read"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
@@ -92,13 +93,25 @@ def backup_month():
     generate_cover(month, id)
 
 
+
+
+
+
 def dominant_color_generator(month):
     colors = ["white", "white", "green", "green", "green", "yellow", "yellow", "yellow", "orange", "orange", "orange", "white"]
     months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
     generated_color = colors[months.index(month)]
     return generated_color
 
-
+def upload_cover(playlist_id):
+    scope = "ugc-image-upload"
+    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
+    # reformat encoding jpg -> base64
+    image = open("/home/pi/scripts/spotify/dataset/thumbnail.jpg", 'rb')
+    image_read = image.read()
+    cover_encoded = base64.b64encode(image_read).decode("utf-8")
+    spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
+    
 
 def generate_cover(query, playlist_ID):
     from google_images_search import GoogleImagesSearch
@@ -130,14 +143,6 @@ def generate_cover(query, playlist_ID):
     upload_cover(playlist_ID)
 
 
-def upload_cover(playlist_id):
-    scope = "ugc-image-upload"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
-    # reformat encoding jpg -> base64
-    image = open("dataset/thumbnail.jpg", 'rb')
-    image_read = image.read()
-    cover_encoded = base64.b64encode(image_read).decode("utf-8")
-    spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
-
 
 backup_month()
+#generate_cover("November", "3vxjOLULFZt8DupgUL0YP5")
