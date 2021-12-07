@@ -106,8 +106,8 @@ def backup_month():
 def dominant_color_generator(month):
     colors = ["white", "white", "green", "green", "green", "yellow",
               "yellow", "yellow", "orange", "orange", "orange", "white"]
-    months = ["Januar", "Februar", "März", "April", "Mai", "Juni",
-              "Juli", "August", "September", "Oktober", "November", "Dezember"]
+    months = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"]
     generated_color = colors[months.index(month)]
     return generated_color
 
@@ -128,7 +128,7 @@ def generate_cover(query, playlist_ID):
     gis = GoogleImagesSearch(
         'AIzaSyChvQNUot0_kNFim2RCCi8sN3Ytr6wrHB4', '13e74226706cfb771')
     _search_params = {
-        'q': query + " wallpaper 4k nature unsplash",
+        'q': query + " wallpaper nature 4k",
         'num': 1,
         'fileType': 'jpg',
         'imgType': 'photo',
@@ -136,7 +136,7 @@ def generate_cover(query, playlist_ID):
         'imgColorType': 'color'
     }
     gis.search(search_params=_search_params, path_to_dir='dataset',
-               width=600, height=600, custom_image_name='asset')
+               width=640, height=640, custom_image_name='asset')
     print("[INFO] Downloaded dataset")
     print("[INFO] Generating Thumbnail...")
     font_type = "dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
@@ -145,7 +145,7 @@ def generate_cover(query, playlist_ID):
 
     draw = ImageDraw.Draw(img)
     w, h = draw.textsize(month, font=font)
-    W, H = (600, 600)
+    W, H = (640, 640)
 
     draw.text(((W-w)/2, (H-h)/2), month, (255, 255, 255), font=font)
     img.save("dataset/thumbnail.jpg")
