@@ -10,12 +10,25 @@ client_id="099bfd618f6a4e668aab271bc6761720"
 client_secret = "93616a9f12ef40c998205ce4d6282622"
 redirect_uri = "http://127.0.0.1:9090"
 
+scope = (
+            'playlist-modify-public '
+            'user-library-read '
+            'user-follow-read '
+            'user-library-modify '
+            'user-read-private '
+            'user-top-read '
+            'user-follow-modify '
+            'user-read-recently-played '
+            'ugc-image-upload '
+            'user-read-playback-state'
+        )
+
+spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
+
 month = datetime.datetime.now().strftime("%B")
 
 
 def get_liked_songs():
-    scope = "user-library-read"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     likedSongs = []
     for i in range(100):
         results = spotify.current_user_saved_tracks(limit=50, offset=50*i)
@@ -28,7 +41,6 @@ def get_liked_songs():
 
 def get_top_songs():
     scope = "user-top-read"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     topSongs = []
     for i in range(100):
         results = spotify.current_user_top_tracks(limit=50, offset=50*i, time_range='short_term')
@@ -48,7 +60,6 @@ def extract_id(songs=get_top_songs()):
 
 def get_playlists():
     scope = "playlist-read-private"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     playlists = []
     results = spotify.current_user_playlists()
     for playlist in results["items"]:
@@ -58,7 +69,6 @@ def get_playlists():
 
 def create_playlist():
     scope = "playlist-modify-private"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     name = month
     description  = "Your favorites from " + month
     if month not in get_playlists():
@@ -69,7 +79,6 @@ def create_playlist():
 
 def playlist_add_songs(songs, id=create_playlist()):
     scope = "playlist-modify-private"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     if id is not None:
         spotify.user_playlist_add_tracks(user="vfroehlich", playlist_id=id, tracks=songs, position=None)
         return id
@@ -105,9 +114,8 @@ def dominant_color_generator(month):
 
 def upload_cover(playlist_id):
     scope = "ugc-image-upload"
-    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
-    image = open("/home/pi/scripts/spotify/dataset/thumbnail.jpg", 'rb')
+    image = open("dataset/thumbnail.jpg", 'rb')
     image_read = image.read()
     cover_encoded = base64.b64encode(image_read).decode("utf-8")
     spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
@@ -128,7 +136,7 @@ def generate_cover(query, playlist_ID):
     gis.search(search_params=_search_params, path_to_dir='dataset', width=600, height=600, custom_image_name='asset')
     print("[INFO] Downloaded dataset")
     print("[INFO] Generating Thumbnail...")
-    font_type = "/home/pi/scripts/spotify/dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
+    font_type = "dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
     font = ImageFont.truetype(font_type, 130, encoding="unic")
     img = Image.open("dataset/asset.jpg")
     
@@ -144,5 +152,5 @@ def generate_cover(query, playlist_ID):
 
 
 
-backup_month()
-#generate_cover("November", "3vxjOLULFZt8DupgUL0YP5")
+#backup_month()
+generate_cover("November", "3vxjOLULFZt8DupgUL0YP5")
