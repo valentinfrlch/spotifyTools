@@ -130,7 +130,6 @@ def generate_cover(query, playlist_ID):
     _search_params = {
         'q': query + " wallpaper 4k nature unsplash",
         'num': 1,
-        'safe': 'medium',
         'fileType': 'jpg',
         'imgType': 'photo',
         'imgDominantColor': dominant_color_generator(query),
