@@ -6,6 +6,7 @@ from PIL import Image, ImageFont, ImageDraw
 import os
 import random
 import base64
+import helpers as h
 
 client_id = "099bfd618f6a4e668aab271bc6761720"
 client_secret = "93616a9f12ef40c998205ce4d6282622"
@@ -119,10 +120,9 @@ def upload_cover(playlist_id):
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
         scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
-    image = open("dataset/thumbnail.jpg", 'rb')
-    image_read = image.read()
-    cover_encoded = base64.b64encode(image_read).decode("utf-8")
-    spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
+    with open("dataset/thumbnail.jpg", 'rb') as image:
+        cover_encoded = base64.b64encode(image.read().decode("utf-8"))
+        spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
 def generate_cover(query):
@@ -160,14 +160,22 @@ def generate_cover(query):
         print("[INFO] render failed")
         return False
 
-import time
 
-# testrun
-months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-for m in months:
-    try:
-        generate_cover(m)
-    except:
-        print(m)
-    time.sleep(3)
+
+playlist_id = "0inxtN0SbkUl9emzZqV4ra"
+upload_cover("0inxtN0SbkUl9emzZqV4ra")
+
+
+
+# # testrun
+
+# import time
+# months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+# for m in months:
+#     try:
+#         generate_cover(m)
+#     except:
+#         print(m)
+#     time.sleep(3)
