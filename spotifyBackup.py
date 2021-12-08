@@ -143,21 +143,28 @@ def generate_cover(query):
     font_type = "dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
     font = ImageFont.truetype(font_type, 150, encoding="unic")
     print(font_type)
-    img = Image.open("dataset/asset.jpg")
+    try:
+        img = Image.open("dataset/asset.jpg")
+        draw = ImageDraw.Draw(img)
+        w, h = draw.textsize(query, font=font)
+        W, H = (640, 640)
 
-    draw = ImageDraw.Draw(img)
-    w, h = draw.textsize(query, font=font)
-    W, H = (640, 640)
-
-    draw.text(((W-w)/2, (H-h)/2), query, (255, 255, 255), font=font)
-    img.save("dataset/thumbnail.jpg")
-    os.remove("dataset/asset.jpg")
-    print("[INFO] cover rendered")
-
+        draw.text(((W-w)/2, (H-h)/2), query, (255, 255, 255), font=font)
+        img.save("dataset/thumbnail.jpg")
+        os.remove("dataset/asset.jpg")
+        print("[INFO] cover rendered")
+    except:
+        os.remove("dataset/asset.jpg")
+        print("[INFO] render failed")
 
 import time
 
 # testrun
-for i in range(10):
-    generate_cover("November")
+months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+for m in months:
+    try:
+        generate_cover(m)
+    except:
+        print(m)
     time.sleep(3)
