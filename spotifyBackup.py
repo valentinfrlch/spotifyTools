@@ -100,8 +100,9 @@ def backup_month():
         else:
             print("[WARNING] Playlist already exists")
             break
-    generate_cover(month, id)
-    upload_cover(playlist_id=id)
+    render_pass = generate_cover(month)
+    if render_pass == True:
+        upload_cover(playlist_id=id)
 
 
 def dominant_color_generator(month):
@@ -153,9 +154,11 @@ def generate_cover(query):
         img.save("dataset/thumbnail.jpg")
         os.remove("dataset/asset.jpg")
         print("[INFO] cover rendered")
+        return True
     except:
         os.remove("dataset/asset.jpg")
         print("[INFO] render failed")
+        return False
 
 import time
 
