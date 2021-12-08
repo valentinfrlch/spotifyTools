@@ -141,7 +141,7 @@ def generate_cover(query):
     print("[INFO] Downloaded dataset")
     print("[INFO] Generating Thumbnail...")
     font_type = "dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
-    font = ImageFont.truetype(font_type, 140, encoding="unic")
+    font = ImageFont.truetype(font_type, 150, encoding="unic")
     print(font_type)
     img = Image.open("dataset/asset.jpg")
 
