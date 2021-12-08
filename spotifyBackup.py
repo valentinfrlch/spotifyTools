@@ -101,6 +101,7 @@ def backup_month():
             print("[WARNING] Playlist already exists")
             break
     generate_cover(month, id)
+    upload_cover(playlist_id=id)
 
 
 def dominant_color_generator(month):
@@ -123,7 +124,7 @@ def upload_cover(playlist_id):
     spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
-def generate_cover(query, playlist_ID):
+def generate_cover(query):
     from google_images_search import GoogleImagesSearch
     gis = GoogleImagesSearch(
         'AIzaSyChvQNUot0_kNFim2RCCi8sN3Ytr6wrHB4', '13e74226706cfb771')
@@ -151,8 +152,7 @@ def generate_cover(query, playlist_ID):
     img.save("dataset/thumbnail.jpg")
     os.remove("dataset/asset.jpg")
     print("[INFO] cover rendered")
-    upload_cover(playlist_ID)
 
 
 backup_month()
-#generate_cover("November", "3rLSr3hI8mH6cFWFw8MNtN")
+generate_cover("November", "3rLSr3hI8mH6cFWFw8MNtN")
