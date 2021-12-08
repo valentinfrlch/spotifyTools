@@ -149,7 +149,7 @@ def generate_cover(query):
     w, h = draw.textsize(query, font=font)
     W, H = (640, 640)
 
-    draw.text(((W-w)/2, (H-h)/2), month, (255, 255, 255), font=font)
+    draw.text(((W-w)/2, (H-h)/2), query, (255, 255, 255), font=font)
     img.save("dataset/thumbnail.jpg")
     os.remove("dataset/asset.jpg")
     print("[INFO] cover rendered")
@@ -159,5 +159,5 @@ import time
 
 # testrun
 for i in range(10):
-    generate_cover("April")
+    generate_cover("November")
     time.sleep(3)
