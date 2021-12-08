@@ -6,7 +6,6 @@ from PIL import Image, ImageFont, ImageDraw
 import os
 import random
 import base64
-import helpers as h
 
 client_id = "099bfd618f6a4e668aab271bc6761720"
 client_secret = "93616a9f12ef40c998205ce4d6282622"
@@ -121,7 +120,7 @@ def upload_cover(playlist_id):
         scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
     with open("dataset/thumbnail.jpg", 'rb') as image:
-        cover_encoded = base64.b64encode(image.read().decode("utf-8"))
+        cover_encoded = base64.b64encode(image.read()).decode("utf-8")
         spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
