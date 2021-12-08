@@ -154,4 +154,9 @@ def generate_cover(query):
     print("[INFO] cover rendered")
 
 
-generate_cover(month)
+import time
+
+# testrun
+for i in range(10):
+    generate_cover(month)
+    time.sleep(3)
