@@ -154,4 +154,4 @@ def generate_cover(query):
     print("[INFO] cover rendered")
 
 
-generate_cover("November")
+generate_cover(month)
