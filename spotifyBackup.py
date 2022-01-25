@@ -115,10 +115,10 @@ def dominant_color_generator(month):
     return generated_color
 
 
-def resize_as_base64(image):
+def resize_as_base64(img):
     from PIL import Image
     from io import BytesIO
-
+    image = Image.open(img)
     new_image = image.resize((300, 300))
     buffered = BytesIO()
     new_image.save(buffered, format="JPEG")
