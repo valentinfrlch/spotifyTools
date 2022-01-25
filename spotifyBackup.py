@@ -6,6 +6,7 @@ from PIL import Image, ImageFont, ImageDraw
 import os
 import random
 import base64
+import requests
 
 client_id = "099bfd618f6a4e668aab271bc6761720"
 client_secret = "93616a9f12ef40c998205ce4d6282622"
@@ -114,6 +115,16 @@ def dominant_color_generator(month):
     return generated_color
 
 
+def resize_as_base64(image):
+    from PIL import Image
+    from io import BytesIO
+
+    new_image = image.resize((300, 300))
+    buffered = BytesIO()
+    new_image.save(buffered, format="JPEG")
+    return base64.b64encode(buffered.getvalue())
+
+
 def upload_cover(playlist_id):
     scope = "ugc-image-upload"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
@@ -160,16 +171,17 @@ def generate_cover(query):
         return False
 
 
+backup_month()
 
 
-playlist_id = "0inxtN0SbkUl9emzZqV4ra"
-upload_cover("0inxtN0SbkUl9emzZqV4ra")
+# playlist_id = "0inxtN0SbkUl9emzZqV4ra"
+# upload_cover("0inxtN0SbkUl9emzZqV4ra")
 
 
 
-# # testrun
+# testrun
 
-# import time
+#import time
 # months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 # for m in months:
