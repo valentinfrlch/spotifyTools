@@ -131,7 +131,7 @@ def upload_cover(playlist_id):
         scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
     with open("dataset/thumbnail.jpg", 'rb') as image:
-        cover_encoded = base64.b64encode(image.read()).decode("utf-8")
+        cover_encoded = resize_as_base64(image)#base64.b64encode(image.read()).decode("utf-8")
         spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
