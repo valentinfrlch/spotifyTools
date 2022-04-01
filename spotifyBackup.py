@@ -6,13 +6,12 @@ from PIL import Image, ImageFont, ImageDraw
 import os
 import random
 import base64
-import requests
+
+from image_generator import *
 
 client_id = "099bfd618f6a4e668aab271bc6761720"
 client_secret = "93616a9f12ef40c998205ce4d6282622"
 redirect_uri = "http://127.0.0.1:9090"
-
-month = datetime.datetime.now().strftime("%B")
 
 
 def get_liked_songs():
@@ -106,25 +105,6 @@ def backup_month():
         upload_cover(playlist_id=id)
 
 
-def dominant_color_generator(month):
-    colors = ["white", "white", "green", "green", "green", "yellow",
-              "yellow", "yellow", "orange", "orange", "orange", "white"]
-    months = ["January", "February", "March", "April", "May", "June",
-              "July", "August", "September", "October", "November", "December"]
-    generated_color = colors[months.index(month)]
-    return generated_color
-
-
-def resize_as_base64(img):
-    from PIL import Image
-    from io import BytesIO
-    image = Image.open(img)
-    new_image = image.resize((300, 300))
-    buffered = BytesIO()
-    new_image.save(buffered, format="JPEG")
-    return base64.b64encode(buffered.getvalue())
-
-
 def upload_cover(playlist_id):
     scope = "ugc-image-upload"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
@@ -135,58 +115,5 @@ def upload_cover(playlist_id):
         spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
-def generate_cover(query):
-    from google_images_search import GoogleImagesSearch
-    gis = GoogleImagesSearch(
-        'AIzaSyChvQNUot0_kNFim2RCCi8sN3Ytr6wrHB4', '13e74226706cfb771')
-    _search_params = {
-        'q': query + " wallpaper nature 4k",
-        'num': 1,
-        'fileType': 'jpg',
-        'imgType': 'photo',
-        'imgDominantColor': dominant_color_generator(query),
-        'imgColorType': 'color'
-    }
-    gis.search(search_params=_search_params, path_to_dir='dataset',
-               width=640, height=640, custom_image_name='asset')
-    print("[INFO] Downloaded dataset")
-    print("[INFO] Generating Thumbnail...")
-    font_type = "dataset/fonts/" + random.choice(os.listdir("dataset/fonts/"))
-    font = ImageFont.truetype(font_type, 150, encoding="unic")
-    print(font_type)
-    try:
-        img = Image.open("dataset/asset.jpg")
-        draw = ImageDraw.Draw(img)
-        w, h = draw.textsize(query, font=font)
-        W, H = (640, 640)
-
-        draw.text(((W-w)/2, (H-h)/2), query, (255, 255, 255), font=font)
-        img.save("dataset/thumbnail.jpg")
-        os.remove("dataset/asset.jpg")
-        print("[INFO] cover rendered")
-        return True
-    except:
-        os.remove("dataset/asset.jpg")
-        print("[INFO] render failed")
-        return False
-
 
 backup_month()
-
-
-# playlist_id = "0inxtN0SbkUl9emzZqV4ra"
-# upload_cover("0inxtN0SbkUl9emzZqV4ra")
-
-
-
-# testrun
-
-#import time
-# months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-# for m in months:
-#     try:
-#         generate_cover(m)
-#     except:
-#         print(m)
-#     time.sleep(3)
