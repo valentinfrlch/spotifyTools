@@ -100,9 +100,7 @@ def backup_month():
         else:
             print("[WARNING] Playlist already exists")
             break
-    render_pass = generate_cover(month)
-    if render_pass == True:
-        upload_cover(playlist_id=id)
+    get_image()
 
 
 def upload_cover(playlist_id):
@@ -111,7 +109,7 @@ def upload_cover(playlist_id):
         scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
     with open("dataset/thumbnail.jpg", 'rb') as image:
-        cover_encoded = resize_as_base64(image)#base64.b64encode(image.read()).decode("utf-8")
+        cover_encoded = #base64.b64encode(image.read()).decode("utf-8")
         spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
