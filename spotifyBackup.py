@@ -100,7 +100,7 @@ def backup_month():
         else:
             print("[WARNING] Playlist already exists")
             break
-    get_image()
+    upload_cover(id)
 
 
 def upload_cover(playlist_id):
@@ -108,10 +108,8 @@ def upload_cover(playlist_id):
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
         scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
     # reformat encoding jpg -> base64
-    with open("dataset/thumbnail.jpg", 'rb') as image:
-        cover_encoded = #base64.b64encode(image.read()).decode("utf-8")
-        spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
+    cover_encoded = synthesize()
+    spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
-
-backup_month()
+upload_cover("4IXMGirWtEAjBoknEuMQLU")
