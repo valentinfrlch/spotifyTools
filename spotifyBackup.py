@@ -112,4 +112,7 @@ def upload_cover(playlist_id):
     spotify.playlist_upload_cover_image(playlist_id, cover_encoded)
 
 
-upload_cover("4IXMGirWtEAjBoknEuMQLU")
+if __name__ == "__main__":
+    # get liked songs
+    likedSongs = get_liked_songs()
+    print("[INFO] " + str(len(likedSongs)) + " liked songs found")
