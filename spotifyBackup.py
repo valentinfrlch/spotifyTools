@@ -1,11 +1,10 @@
 import spotipy
-from spotipy import oauth2
 from spotipy.oauth2 import SpotifyOAuth
 import datetime
 from openai import OpenAI
 import base64
 import requests
-import json
+from energyGraph import playlistGraph
 
 # read file "secrets.txt" and extract keys
 with open("secrets.txt", "r") as f:
@@ -53,6 +52,20 @@ def extract_id(songs=get_top_songs()):
     return IDs
 
 
+def get_songs_from_playlist(playlist_id):
+    scope = "playlist-read-private"
+    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
+        scope=scope, client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET, redirect_uri=redirect_uri))
+    songs = []
+    for i in range(100):
+        results = spotify.playlist_tracks(playlist_id, limit=50, offset=50*i)
+        for track in results["items"]:
+            songs.append(track)
+        if len(results["items"]) < 50:
+            break
+    return songs
+
+
 def get_playlists():
     scope = "playlist-read-private"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
@@ -64,12 +77,23 @@ def get_playlists():
     return playlists
 
 
+def get_playlist_id(name):
+    scope = "playlist-read-private"
+    spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
+        scope=scope, client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET, redirect_uri=redirect_uri))
+    results = spotify.current_user_playlists()
+    for playlist in results["items"]:
+        if playlist["name"] == name:
+            return playlist["id"]
+    return False
+
+
 def create_playlist():
     scope = "playlist-modify-private"
     spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
         scope=scope, client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET, redirect_uri=redirect_uri))
     # get current month and year but ony last 2 digits
-    month  = datetime.datetime.now().strftime("%B %y")
+    month = datetime.datetime.now().strftime("%B %y")
     description = "Your favorites from " + month
     if month not in get_playlists():
         id = spotify.user_playlist_create(
@@ -120,7 +144,7 @@ def upload_cover(playlist_id):
 
 def image_generator(month):
     # we're going to call openai API here to generate an image
-    #initialize API key
+    # initialize API key
     client = OpenAI(api_key=OPENAI_API_KEY)
     # call API
     response = client.images.generate(
@@ -129,10 +153,11 @@ def image_generator(month):
         size="512x512",
         quality="standard",
         n=1,
-        )
+    )
 
     image_url = response.data[0].url
     return image_url
+
 
 def promt_gen(month):
     if month in ["December", "January", "February"]:
@@ -155,7 +180,7 @@ def text_overlay(img_url):
     # draw the text in the middle of the image and center it
     W, H = img.size
     _, _, w, h = draw.textbbox((0, 0), month, font=font)
-    draw.text(((W-w)/2,(H-h)/2), month, fill="white", font=font)
+    draw.text(((W-w)/2, (H-h)/2), month, fill="white", font=font)
     # convert image to base64
     buffered = BytesIO()
     img.save(buffered, format="JPEG")
@@ -163,15 +188,13 @@ def text_overlay(img_url):
 
 
 if __name__ == "__main__":
-    month = datetime.datetime.now().strftime("%B")
-    print("Backing up your favorite songs from " + month)
-    image_generator(month)
     
-    # get liked songs
-    likedSongs = get_liked_songs()
-    print("[INFO] " + str(len(likedSongs)) + " liked songs found")
-    # get top songs from that month
-    topSongs = get_top_songs()
-    print("[INFO] " + str(len(topSongs)) + " top songs found")
-    # add top songs to playlist
-    backup_month()
+    id = get_playlist_id("PokéDinner")
+    tracks = get_songs_from_playlist(id)
+
+    ids = []
+    for track in tracks:
+        ids.append(track["track"]["id"])
+    
+    # call the graph function
+    playlistGraph(ids=ids)
