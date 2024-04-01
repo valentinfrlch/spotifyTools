@@ -1,3 +1,3 @@
-# spotify
+# spotifyTools
 
-Creates an archive of your monthly favorites.
+Tools for automating spotify and more
