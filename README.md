@@ -8,4 +8,4 @@ Create a 'secrets.txt' file in the main folder and on each line in the following
 2. client_secret
 3. (optional) openai API key for cover image generation
 
-You can get those credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+You can get those credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard). You need a spotify account (no premium required for endpoints used here).
